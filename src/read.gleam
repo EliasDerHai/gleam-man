@@ -3,11 +3,25 @@ import gleam/string
 import gleam/yielder
 import stdin
 
-pub fn prompt_char(message: String) -> String {
+pub type Guess {
+  GuessLetter(letter: String)
+  GuessWord(word: String)
+}
+
+pub fn prompt_guess(message: String, word_len: Int) -> Guess {
   io.println(message)
   case read_line() |> string.to_graphemes {
-    [c] -> c
-    _ -> prompt_char(message)
+    [c] -> GuessLetter(c)
+    word -> {
+      let word = string.concat(word)
+      case string.length(word) == word_len {
+        False -> {
+          io.println("bad input - try again!")
+          prompt_guess(message, word_len)
+        }
+        True -> GuessWord(word)
+      }
+    }
   }
 }
 

@@ -2,10 +2,16 @@ import gleam/list
 import gleam/string
 
 pub type Game {
-  Game(hidden_word: String, displayed_word: String, lives: Int)
+  Game(
+    hidden_word: String,
+    displayed_word: String,
+    lives: Int,
+    won: Int,
+    lost: Int,
+  )
 }
 
-pub fn game() -> Game {
+pub fn game(won: Int, lost: Int) -> Game {
   let hidden_word = random_word()
   let displayed_word: String =
     hidden_word
@@ -13,7 +19,7 @@ pub fn game() -> Game {
     |> list.map(fn(_) { "_" })
     |> string.concat()
 
-  Game(hidden_word, displayed_word, 9)
+  Game(hidden_word, displayed_word, 5, won, lost)
 }
 
 fn random_word() -> String {
@@ -36,6 +42,10 @@ fn random_words() -> List(String) {
     "potatoes",
     "philosophy",
     "anger",
+    "mountainbike",
+    "tzatziki",
+    "honey",
+    "ice cream",
   ]
   |> list.shuffle()
 }
