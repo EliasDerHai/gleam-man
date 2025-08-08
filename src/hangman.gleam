@@ -1,47 +1,51 @@
+import game_state.{type GameState}
 import gleam/io
-import gleam/list
 import gleam/string
+import read
 
-pub fn main() -> Nil {
-  let game = game()
-  io.println(string.concat(["Hello from ", game.hidden_word, "!"]))
+pub fn main() {
+  let game = game_state.game_state()
+  loop(game)
+  Nil
 }
 
-type Game {
-  Game(hidden_word: String, displayed_word: String, lifes: Int)
+fn loop(game: GameState) -> GameState {
+  game |> read() |> eval() |> print() |> loop()
 }
 
-fn game() -> Game {
-  let hidden_word = random_word()
-  let displayed_word: String =
-    hidden_word
-    |> string.to_graphemes()
-    |> list.map(fn(_) { " _ " })
-    |> string.concat()
-
-  Game(hidden_word, displayed_word, 9)
+type Command {
+  Guess(letter: String)
 }
 
-fn random_word() -> String {
-  let w = case random_words() |> list.first() {
-    Error(_) -> random_word()
-    Ok(w) -> w
+fn read(game: GameState) -> #(GameState, Command) {
+  let c = read.prompt_char("Enter guess")
+  #(game, Guess(c))
+}
+
+fn eval(tuple: #(GameState, Command)) -> GameState {
+  let #(game, cmd) = tuple
+
+  case cmd {
+    Guess(letter:) ->
+      case string.contains(game.hidden_word, letter) {
+        False ->
+          game_state.GameState(
+            game.hidden_word,
+            game.displayed_word,
+            game.lifes - 1,
+          )
+        True ->
+          game_state.GameState(
+            game.hidden_word,
+            // TODO: show letters
+            game.displayed_word,
+            game.lifes,
+          )
+      }
   }
-  w
 }
 
-fn random_words() -> List(String) {
-  [
-    "water",
-    "hot air baloon",
-    "bubble",
-    "blueberry",
-    "strawberry",
-    "cheesecake",
-    "tomatoes",
-    "potatoes",
-    "philosophy",
-    "anger",
-  ]
-  |> list.shuffle()
+fn print(game: GameState) -> GameState {
+  io.println(game.displayed_word)
+  game
 }
