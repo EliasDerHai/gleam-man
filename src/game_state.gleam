@@ -1,19 +1,19 @@
 import gleam/list
 import gleam/string
 
-pub type GameState {
-  GameState(hidden_word: String, displayed_word: String, lifes: Int)
+pub type Game {
+  Game(hidden_word: String, displayed_word: String, lives: Int)
 }
 
-pub fn game_state() -> GameState {
+pub fn game() -> Game {
   let hidden_word = random_word()
   let displayed_word: String =
     hidden_word
     |> string.to_graphemes()
-    |> list.map(fn(_) { " _ " })
+    |> list.map(fn(_) { "_" })
     |> string.concat()
 
-  GameState(hidden_word, displayed_word, 9)
+  Game(hidden_word, displayed_word, 9)
 }
 
 fn random_word() -> String {
